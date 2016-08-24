@@ -32,6 +32,7 @@
 		92B4F7151CE577780067B9FB /* UIWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B4F7061CE577780067B9FB /* UIWebView+AFNetworking.m */; };
 		92B4F7191CE577C70067B9FB /* CSNetWorkManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 92B4F7181CE577C70067B9FB /* CSNetWorkManager.m */; };
 		92B4F71B1CE5C7B70067B9FB /* guangtouqiang.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 92B4F71A1CE5C7B70067B9FB /* guangtouqiang.jpg */; };
+		92C082391D6D6E09004EFDAE /* CSUploadFileModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 92C082381D6D6E09004EFDAE /* CSUploadFileModel.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -104,6 +105,8 @@
 		92B4F7171CE577C70067B9FB /* CSNetWorkManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSNetWorkManager.h; sourceTree = "<group>"; };
 		92B4F7181CE577C70067B9FB /* CSNetWorkManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSNetWorkManager.m; sourceTree = "<group>"; wrapsLines = 1; };
 		92B4F71A1CE5C7B70067B9FB /* guangtouqiang.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = guangtouqiang.jpg; sourceTree = "<group>"; };
+		92C082371D6D6E09004EFDAE /* CSUploadFileModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSUploadFileModel.h; sourceTree = "<group>"; };
+		92C082381D6D6E09004EFDAE /* CSUploadFileModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CSUploadFileModel.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -247,6 +250,8 @@
 		92B4F7161CE577AA0067B9FB /* CSNetWork */ = {
 			isa = PBXGroup;
 			children = (
+				92C082371D6D6E09004EFDAE /* CSUploadFileModel.h */,
+				92C082381D6D6E09004EFDAE /* CSUploadFileModel.m */,
 				92B4F7171CE577C70067B9FB /* CSNetWorkManager.h */,
 				92B4F7181CE577C70067B9FB /* CSNetWorkManager.m */,
 			);
@@ -385,6 +390,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				92B4F7131CE577780067B9FB /* UIProgressView+AFNetworking.m in Sources */,
+				92C082391D6D6E09004EFDAE /* CSUploadFileModel.m in Sources */,
 				92B4F70C1CE577780067B9FB /* AFURLSessionManager.m in Sources */,
 				92B4F7151CE577780067B9FB /* UIWebView+AFNetworking.m in Sources */,
 				92B4F7121CE577780067B9FB /* UIImageView+AFNetworking.m in Sources */,
@@ -630,6 +636,7 @@
 				92B4F6DD1CE577350067B9FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		92B4F6DE1CE577350067B9FB /* Build configuration list for PBXNativeTarget "CSAF3.0DemoTests" */ = {
 			isa = XCConfigurationList;
@@ -638,6 +645,7 @@
 				92B4F6E01CE577350067B9FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		92B4F6E11CE577350067B9FB /* Build configuration list for PBXNativeTarget "CSAF3.0DemoUITests" */ = {
 			isa = XCConfigurationList;
@@ -646,6 +654,7 @@
 				92B4F6E31CE577350067B9FB /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

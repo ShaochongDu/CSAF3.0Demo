@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "CSNetWorkManager.h"
+#import "CSUploadFileModel.h"
 
 @interface ViewController ()
 
@@ -28,11 +29,11 @@
 //    http://192.168.0.56:2000/Actitvity.ashx?type=gettypecps
     
     //  普通get请求
-    [[CSNetWorkManager shareManager] getWithUrlStr:serverUrl headerParameterDic:headerParameterDic parameterDic:parameterDic successBlock:^(NSURLSessionDataTask *task, id responseObject) {
-        NSLog(@"成功");
-    } failureBlock:^(NSURLSessionDataTask *task, NSError *error) {
-        NSLog(@"失败");
-    }];
+//    [[CSNetWorkManager shareManager] getWithUrlStr:serverUrl headerParameterDic:headerParameterDic parameterDic:parameterDic successBlock:^(NSURLSessionDataTask *task, id responseObject) {
+//        NSLog(@"成功");
+//    } failureBlock:^(NSURLSessionDataTask *task, NSError *error) {
+//        NSLog(@"失败");
+//    }];
     
     //  带有头部信息的get请求
 //    http://101.201.210.249:18080//moble/activity?orderType=0
@@ -69,21 +70,30 @@
     
 
     //  图片上传
-//    serverUrl = @"http://192.168.0.56:2000/Actitvity.ashx";
-//    [parameterDic setObject:@"测试光头强" forKey:@"title"];
-//    [parameterDic setObject:@"描述信息" forKey:@"intro"];
-//    NSMutableArray *imagePathArray = [NSMutableArray array];
-//    for (int i = 0; i < 3; i++) {
-//        NSString *str= [[NSBundle mainBundle] pathForResource:@"guangtouqiang" ofType:@"jpg"];
-//        [imagePathArray addObject:str];
-//    }
-//    [[CSNetWorkManager shareManager] uploadMultiImageWithServerUrl:serverUrl headerParameterDic:nil parameterDic:parameterDic dataPathArray:imagePathArray fileType:FileTypeImage successBlock:^(NSURLResponse *reponse, id responseObject) {
-//        
-//    } failureBlock:^(NSError *error) {
-//        
-//    } progressBlock:^(NSProgress *downloadProgress) {
-//        
-//    }];
+    serverUrl = @"http://192.168.0.158:8088/OrderSup.ashx";
+    [parameterDic setObject:@"测试光头强" forKey:@"Theme"];
+    [parameterDic setObject:@"845" forKey:@"TrmsId"];
+    //  此参数跟图片张数有关
+    [parameterDic setObject:@"image1图片1的描述&image2图片2的描述" forKey:@"comments"];
+    [parameterDic setObject:@"1" forKey:@"iType"];
+    [parameterDic setObject:@"27b1f14f-8783-40d4-98e5-2f79b4e2c418" forKey:@"token"];
+    [parameterDic setObject:@"992" forKey:@"trId"];
+    [parameterDic setObject:@"update" forKey:@"type"];
+    NSMutableArray *fileArray = [NSMutableArray array];
+    for (int i = 0; i < 2; i++) {
+        CSUploadFileModel *fileModel = [[CSUploadFileModel alloc] init];
+        fileModel.fileType = FileTypeImage;
+        fileModel.originalFileName = [NSString stringWithFormat:@"filename%d.jpg",i];   //  一定要带有后缀
+        fileModel.originalFilePath = [[NSBundle mainBundle] pathForResource:@"guangtouqiang" ofType:@"jpg"];
+        [fileArray addObject:fileModel];
+    }
+    [[CSNetWorkManager shareManager] uploadMultiImageWithServerUrl:serverUrl headerParameterDic:nil parameterDic:parameterDic imageArray:fileArray videoArray:nil successBlock:^(NSURLResponse *reponse, id responseObject) {
+        
+    } failureBlock:^(NSError *error) {
+        
+    } progressBlock:^(NSProgress *downloadProgress) {
+        
+    }];
     
     //  文件下载
 //    serverUrl = @"http://baotou.gongyeyun.com///CloudFile//2015//12//23//14//2015122302430050QANTA3MNBD.jpg";

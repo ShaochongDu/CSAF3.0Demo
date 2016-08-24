@@ -7,6 +7,7 @@
 //
 
 #import "CSNetWorkManager.h"
+#import "CSUploadFileModel.h"
 //  服务器基本地址
 //static NSString * const AFAppDotNetAPIBaseURLString = @"https://api.app.net/";
 static CSNetWorkManager *defaultNetManager = nil;
@@ -215,7 +216,6 @@ static CSNetWorkManager *defaultNetManager = nil;
  *  @param headerParameterDic 请求的头部信息
  *  @param parameterDic       参数字典
  *  @param dataPathArray      本地文件路径
- *  @param fileType           文件类型
  *  @param successBlok        成功回调
  *  @param failureBlock       失败回调
  *  @param progressBlock      请求进度
@@ -223,16 +223,45 @@ static CSNetWorkManager *defaultNetManager = nil;
 - (void)uploadMultiImageWithServerUrl:(NSString *)urlStr
                    headerParameterDic:(NSDictionary *)headerParameterDic
                          parameterDic:(NSMutableDictionary *)parameterDic
-                        dataPathArray:(NSMutableArray *)dataPathArray
-                             fileType:(FileType)fileType
+                           imageArray:(NSMutableArray *)imageArray
+                           videoArray:(NSMutableArray *)videoArray
+                         successBlock:(UploadSuccessBlock)successBlock
+                         failureBlock:(ErrorBlock)failureBlock
+                        progressBlock:(ProgressBlock)progressBlock
+{
+    NSMutableArray *fileArray = [NSMutableArray array];
+    if (imageArray.count) {
+        [fileArray addObjectsFromArray:imageArray];
+    }
+    if (videoArray.count) {
+        [fileArray addObjectsFromArray:videoArray];
+    }
+    [self uploadMultiImageWithServerUrl:urlStr headerParameterDic:headerParameterDic parameterDic:parameterDic fileArray:fileArray successBlock:successBlock failureBlock:failureBlock progressBlock:progressBlock];
+}
+
+/**
+ *  多文件上传接口(图片/视频 + 文本)
+ *
+ *  @param urlStr             服务器地址
+ *  @param headerParameterDic 请求的头部信息
+ *  @param parameterDic       参数字典
+ *  @param fileArray          文件数据模型数组
+ *  @param successBlock       成功回调
+ *  @param failureBlock       失败回调
+ *  @param progressBlock      请求进度
+ */
+- (void)uploadMultiImageWithServerUrl:(NSString *)urlStr
+                   headerParameterDic:(NSDictionary *)headerParameterDic
+                         parameterDic:(NSMutableDictionary *)parameterDic
+                            fileArray:(NSMutableArray *)fileArray
                          successBlock:(UploadSuccessBlock)successBlock
                          failureBlock:(ErrorBlock)failureBlock
                         progressBlock:(ProgressBlock)progressBlock
 {
     defaultNetManager.manager.responseSerializer.acceptableContentTypes = [NSSet setWithObjects:@"application/json",@"text/html",@"text/plain",@"image/jpeg",nil];
-//    manager.requestSerializer = [AFHTTPRequestSerializer serializer];
-//    manager.responseSerializer = [AFHTTPResponseSerializer serializer];
-//    defaultNetManager.manager.requestSerializer.timeoutInterval = 30.f;
+    //        defaultNetManager.manager.requestSerializer = [AFHTTPRequestSerializer serializer];
+    //            defaultNetManager.manager.responseSerializer = [AFHTTPResponseSerializer serializer];
+    //    defaultNetManager.manager.requestSerializer.timeoutInterval = 30.f;
     
     [self printRequestUrl:urlStr parameterDic:parameterDic];
     //  设置header信息必须在序列化之后设置
@@ -240,25 +269,26 @@ static CSNetWorkManager *defaultNetManager = nil;
     NSMutableURLRequest *request = [[AFHTTPRequestSerializer serializer] multipartFormRequestWithMethod:@"POST" URLString:urlStr parameters:parameterDic constructingBodyWithBlock:^(id<AFMultipartFormData> formData) {
         //将图片装换为二进制格式--UIImageJPEGRepresentation第一个参数为要上传的图片,第二个参数是图片压缩的倍数
         //如果要上传多张图片把下面两句代码放到for循环里即可
-        for (int i = 0; i< dataPathArray.count; i++) {
+        for (int i = 0; i< fileArray.count; i++) {
             //  判断图片在本地或网络
-            NSData *imgData = [NSData dataWithContentsOfFile:dataPathArray[i]];
-            if (!imgData) {
-                imgData = [NSData dataWithContentsOfURL:[NSURL URLWithString:dataPathArray[i]]];
+            CSUploadFileModel *fileModel = fileArray[i];
+            NSData *fileData = [NSData dataWithContentsOfFile:fileModel.originalFilePath];
+            if (!fileData) {
+                fileData = [NSData dataWithContentsOfURL:[NSURL URLWithString:fileModel.originalFilePath]];
             }
-            if (imgData) {
-                if (fileType == FileTypeImage) {
-                    [formData appendPartWithFileData:imgData name:[NSString stringWithFormat:@"image_%d",i] fileName:[NSString stringWithFormat:@"image_%d.jpg",i] mimeType:@"image/jpeg"];
-                }else if (fileType == FileTypeVideo) {
-                    [formData appendPartWithFileData:imgData name:[NSString stringWithFormat:@"video_%d",i] fileName:[NSString stringWithFormat:@"video_%d.mov",i] mimeType:@"video/quicktime"];
-                }else {
-                    NSLog(@"tip：文件类型不确定");
-                }
-            }else{
-                NSLog(@"error:未找到相应图片数据，不进行服务器上传！！！！！！");
+            //  此处fileName文件名 必须带有后缀如:.jpg;.mov;.gif
+            if (fileModel.fileType == FileTypeImage) {
+                [formData appendPartWithFileData:fileData name:[NSString stringWithFormat:@"image_%d",i] fileName:fileModel.originalFileName mimeType:@"image/jpeg"];
+            } else if (fileModel.fileType == FileTypeVideo) {
+                [formData appendPartWithFileData:fileData name:[NSString stringWithFormat:@"video_%d",i] fileName:fileModel.originalFileName mimeType:@"video/quicktime"];
+            } else if (fileModel.fileType == FileTypeGif) {
+                [formData appendPartWithFileData:fileData name:[NSString stringWithFormat:@"gif_%d",i] fileName:fileModel.originalFileName mimeType:@"image/gif"];
+            } else {
+                NSLog(@"error：文件类型未知");
             }
+            
         }
-//        [formData appendPartWithFileURL:[NSURL fileURLWithPath:@"file://path/to/image.jpg"] name:@"file" fileName:@"filename.jpg" mimeType:@"image/jpeg" error:nil];
+        //        [formData appendPartWithFileURL:[NSURL fileURLWithPath:@"file://path/to/image.jpg"] name:@"file" fileName:@"filename.jpg" mimeType:@"image/jpeg" error:nil];
     } error:nil];
     
     NSURLSessionUploadTask *uploadTask;
@@ -267,12 +297,12 @@ static CSNetWorkManager *defaultNetManager = nil;
                   progress:^(NSProgress * _Nonnull uploadProgress) {
                       // This is not called back on the main queue.
                       // You are responsible for dispatching to the main queue for UI updates
-//                      dispatch_async(dispatch_get_main_queue(), ^{
-//                          //Update the progress view
-//                          [progressView setProgress:uploadProgress.fractionCompleted];
-//                      });
-//                      NSLog(@"%lld-%lld",uploadProgress.totalUnitCount,uploadProgress.completedUnitCount);
-                      NSLog(@"downloadProgress:---------%.2f---------",uploadProgress.fractionCompleted);
+                      //                      dispatch_async(dispatch_get_main_queue(), ^{
+                      //                          //Update the progress view
+                      //                          [progressView setProgress:uploadProgress.fractionCompleted];
+                      //                      });
+                      //                      NSLog(@"%lld-%lld",uploadProgress.totalUnitCount,uploadProgress.completedUnitCount);
+                      NSLog(@"uploadProgress:---------%.2f---------",uploadProgress.fractionCompleted);
                       progressBlock(uploadProgress);
                   }
                   completionHandler:^(NSURLResponse * _Nonnull response, id  _Nullable responseObject, NSError * _Nullable error) {
@@ -290,7 +320,6 @@ static CSNetWorkManager *defaultNetManager = nil;
     
     [uploadTask resume];
 }
-
 
 /**
  *  文件下载

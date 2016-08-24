@@ -9,10 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "AFNetworking.h"
 
-typedef NS_ENUM(NSInteger, FileType){
-    FileTypeImage,  //  图片类型
-    FileTypeVideo,  //  视频类型
-};
+
 typedef void(^SuccessBlock)(NSURLSessionDataTask *task,id responseObject);
 typedef void(^FailureBlock)(NSURLSessionDataTask *task, NSError *error);
 typedef void(^ProgressBlock)(NSProgress *downloadProgress);
@@ -106,25 +103,45 @@ typedef void(^DownloadSuccessBlock)(NSURLResponse *reponse,NSURL *filePath);
                            progressBlock:(ProgressBlock)progressBlock;
 
 /**
- *  多文件上传接口(图片/视频 + 文本)
+ *  多文件上传接口(图片/视频 + 文本)两个数组
  *
  *  @param urlStr             服务器地址
  *  @param headerParameterDic 请求的头部信息
  *  @param parameterDic       参数字典
- *  @param dataPathArray      本地文件路径
- *  @param fileType           文件类型
- *  @param successBlok        成功回调
+ *  @param imageArray         图片数据模型数组
+ *  @param videoArray         视频数据模型数组
+ *  @param successBlock       成功回调
  *  @param failureBlock       失败回调
  *  @param progressBlock      请求进度
  */
 - (void)uploadMultiImageWithServerUrl:(NSString *)urlStr
-             headerParameterDic:(NSDictionary *)headerParameterDic
-                   parameterDic:(NSMutableDictionary *)parameterDic
-                  dataPathArray:(NSMutableArray *)dataPathArray
-                       fileType:(FileType)fileType
-                   successBlock:(UploadSuccessBlock)successBlock
-                   failureBlock:(ErrorBlock)failureBlock
-                  progressBlock:(ProgressBlock)progressBlock;
+                   headerParameterDic:(NSDictionary *)headerParameterDic
+                         parameterDic:(NSMutableDictionary *)parameterDic
+                           imageArray:(NSMutableArray *)imageArray
+                           videoArray:(NSMutableArray *)videoArray
+                         successBlock:(UploadSuccessBlock)successBlock
+                         failureBlock:(ErrorBlock)failureBlock
+                        progressBlock:(ProgressBlock)progressBlock;
+
+
+/**
+ *  多文件上传接口(图片/视频 + 文本)多文件类型接口
+ *
+ *  @param urlStr             服务器地址
+ *  @param headerParameterDic 请求的头部信息
+ *  @param parameterDic       参数字典
+ *  @param fileArray          文件数据模型数组
+ *  @param successBlock       成功回调
+ *  @param failureBlock       失败回调
+ *  @param progressBlock      请求进度
+ */
+- (void)uploadMultiImageWithServerUrl:(NSString *)urlStr
+                   headerParameterDic:(NSDictionary *)headerParameterDic
+                         parameterDic:(NSMutableDictionary *)parameterDic
+                            fileArray:(NSMutableArray *)fileArray
+                         successBlock:(UploadSuccessBlock)successBlock
+                         failureBlock:(ErrorBlock)failureBlock
+                        progressBlock:(ProgressBlock)progressBlock;
 
 /**
  *  文件下载
